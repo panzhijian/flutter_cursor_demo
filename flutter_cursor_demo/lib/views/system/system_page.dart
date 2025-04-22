@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:flutter_cursor_demo/models/tree.dart';
 import 'package:flutter_cursor_demo/viewmodels/system_viewmodel.dart';
 import 'package:flutter_cursor_demo/widgets/article_item.dart';
+import 'package:flutter_cursor_demo/routes/app_routes.dart';
 
 class SystemPage extends StatefulWidget {
   const SystemPage({Key? key}) : super(key: key);
@@ -155,12 +157,32 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, 
     
     return EasyRefresh(
       controller: _refreshController,
+      header: const ClassicHeader(
+        dragText: '下拉刷新',
+        armedText: '释放刷新',
+        readyText: '正在刷新...',
+        processingText: '正在刷新...',
+        processedText: '刷新完成',
+        failedText: '刷新失败',
+        messageText: '最后更新于 %T',
+      ),
+      footer: const ClassicFooter(
+        dragText: '上拉加载',
+        armedText: '释放加载',
+        readyText: '正在加载...',
+        processingText: '正在加载...',
+        processedText: '加载完成',
+        failedText: '加载失败',
+        noMoreText: '没有更多数据',
+        messageText: '最后更新于 %T',
+      ),
       onRefresh: () async {
         await viewModel.refreshData();
       },
       onLoad: () async {
         await viewModel.loadMoreArticles();
       },
+      resetAfterRefresh: true,
       child: ListView.builder(
         itemCount: viewModel.articles.length,
         itemBuilder: (context, index) {

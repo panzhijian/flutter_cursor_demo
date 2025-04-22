@@ -25,34 +25,62 @@ class _MainPageState extends State<MainPage> {
   
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = _getSelectedIndex(context);
+    
     return Scaffold(
       body: IndexedStack(
-        index: _getSelectedIndex(context),
+        index: selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _getSelectedIndex(context),
-        onTap: (index) => _onItemTapped(index, context),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 12.sp,
-        unselectedFontSize: 12.sp,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '首页',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: '体系',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '我的',
-          ),
-        ],
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (index) => _onItemTapped(index, context),
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.grey,
+          selectedFontSize: 12.sp,
+          unselectedFontSize: 12.sp,
+          items: [
+            _buildBottomNavigationBarItem(
+              icon: const Icon(Icons.home),
+              label: '首页',
+              isSelected: selectedIndex == 0,
+            ),
+            _buildBottomNavigationBarItem(
+              icon: const Icon(Icons.category),
+              label: '体系',
+              isSelected: selectedIndex == 1,
+            ),
+            _buildBottomNavigationBarItem(
+              icon: const Icon(Icons.person),
+              label: '我的',
+              isSelected: selectedIndex == 2,
+            ),
+          ],
+        ),
       ),
+    );
+  }
+  
+  BottomNavigationBarItem _buildBottomNavigationBarItem({
+    required Widget icon,
+    required String label,
+    required bool isSelected,
+  }) {
+    return BottomNavigationBarItem(
+      icon: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        child: Transform.scale(
+          scale: isSelected ? 1.2 : 1.0,
+          child: icon,
+        ),
+      ),
+      label: label,
     );
   }
   

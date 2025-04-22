@@ -42,7 +42,6 @@ class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       body: Consumer<UserViewModel>(
         builder: (context, viewModel, child) {
@@ -72,7 +71,7 @@ class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin 
   
   Widget _buildUserHeader(BuildContext context, UserViewModel viewModel) {
     return Container(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.fromLTRB(24.r, 40.r, 24.r, 24.r), // 增加上边距
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -92,60 +91,29 @@ class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin 
   Widget _buildLoggedInHeader(BuildContext context, UserViewModel viewModel) {
     final user = viewModel.currentUser;
     
-    return Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CircleAvatar(
-          radius: 40.r,
-          backgroundColor: Colors.white,
-          child: Text(
-            user?.username?.substring(0, 1).toUpperCase() ?? 'U',
-            style: TextStyle(
-              fontSize: 30.sp,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
+        Container(
+          width: 80.r,
+          height: 80.r,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: FlutterLogo(
+              size: 60.r,
             ),
           ),
         ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                user?.username ?? '用户',
-                style: TextStyle(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                'ID: ${user?.id ?? ''}',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.white.withOpacity(0.8),
-                ),
-              ),
-            ],
-          ),
-        ),
-        TextButton(
-          onPressed: () async {
-            await _showLogoutDialog(context, viewModel);
-          },
-          style: TextButton.styleFrom(
-            backgroundColor: Colors.white.withOpacity(0.2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-          ),
-          child: Text(
-            '退出登录',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14.sp,
-            ),
+        SizedBox(height: 16.h),
+        Text(
+          user?.username ?? '用户',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ],
@@ -153,20 +121,28 @@ class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin 
   }
   
   Widget _buildNotLoggedInHeader(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 40.r,
-          backgroundColor: Colors.white,
-          child: Icon(
-            Icons.person,
-            size: 40.r,
-            color: Theme.of(context).primaryColor,
+    return GestureDetector(
+      onTap: () {
+        context.push(AppRoutes.login);
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80.r,
+            height: 80.r,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: FlutterLogo(
+                size: 60.r,
+              ),
+            ),
           ),
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: Text(
+          SizedBox(height: 16.h),
+          Text(
             '未登录',
             style: TextStyle(
               fontSize: 20.sp,
@@ -174,19 +150,21 @@ class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin 
               color: Colors.white,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
   
   Widget _buildLoginButtonArea(BuildContext context, UserViewModel viewModel) {
-    if (viewModel.isLoggedIn) return const SizedBox.shrink();
-    
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 32.h),
       child: ElevatedButton(
         onPressed: () {
-          context.push(AppRoutes.login);
+          if (viewModel.isLoggedIn) {
+            _showLogoutDialog(context, viewModel);
+          } else {
+            context.push(AppRoutes.login);
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue,
@@ -197,7 +175,7 @@ class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin 
           ),
         ),
         child: Text(
-          '登录/注册',
+          viewModel.isLoggedIn ? '退出登录' : '登录/注册',
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
@@ -218,7 +196,7 @@ class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin 
               _showNeedLoginDialog(context);
               return;
             }
-            // TODO: 实现收藏功能
+            context.push(AppRoutes.collect);
           },
         ),
         _buildFunctionItem(

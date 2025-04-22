@@ -43,6 +43,10 @@ dependencies:
   provider: ^6.1.2
   # 网络请求
   dio: ^5.8.0+1
+  # Cookie管理
+  dio_cookie_manager: ^3.1.1
+  cookie_jar: ^4.0.8
+  path_provider: ^2.1.3
   # 路由管理
   go_router: ^15.1.0
   # 图片缓存

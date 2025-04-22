@@ -29,6 +29,15 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
   
   void _initWebView() {
+    // 处理URL，确保有完整的scheme
+    String urlToLoad = widget.url;
+    
+    // 检查URL是否包含scheme
+    if (!urlToLoad.startsWith('http://') && !urlToLoad.startsWith('https://')) {
+      // 如果是相对路径，添加完整的域名前缀
+      urlToLoad = 'https://www.wanandroid.com${urlToLoad.startsWith('/') ? '' : '/'}$urlToLoad';
+    }
+    
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -48,7 +57,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(widget.url));
+      ..loadRequest(Uri.parse(urlToLoad));
   }
 
   @override
@@ -64,14 +73,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              // TODO: 实现分享功能
-            },
-          ),
-        ],
       ),
       body: Stack(
         children: [

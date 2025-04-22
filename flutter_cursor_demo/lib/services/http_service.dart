@@ -1,4 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'package:flutter_cursor_demo/utils/log_util.dart';
 import 'package:flutter_cursor_demo/config/app_config.dart';
 
@@ -7,13 +11,27 @@ class HttpService {
   factory HttpService() => _instance;
   
   late Dio _dio;
+  late CookieJar _cookieJar;
+  bool _isInitialized = false;
   
-  HttpService._internal() {
+  HttpService._internal();
+  
+  Future<void> init() async {
+    if (_isInitialized) return;
+    
     _dio = Dio(BaseOptions(
       baseUrl: AppConfig.baseUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
     ));
+    
+    // 初始化持久化Cookie管理
+    final tempDir = await getTemporaryDirectory();
+    final cookiePath = '${tempDir.path}/.cookies/';
+    _cookieJar = PersistCookieJar(
+      storage: FileStorage(cookiePath),
+    );
+    _dio.interceptors.add(CookieManager(_cookieJar));
     
     // 添加请求拦截器
     _dio.interceptors.add(InterceptorsWrapper(
@@ -32,10 +50,18 @@ class HttpService {
         return handler.next(e);
       },
     ));
+    
+    _isInitialized = true;
+  }
+  
+  // 清除所有Cookies，用于退出登录
+  Future<void> clearCookies() async {
+    await _cookieJar.deleteAll();
   }
   
   // GET请求
   Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? params}) async {
+    await init();
     try {
       final response = await _dio.get(path, queryParameters: params);
       return _handleResponse(response);
@@ -46,6 +72,7 @@ class HttpService {
   
   // POST请求
   Future<Map<String, dynamic>> post(String path, {dynamic data, Map<String, dynamic>? params}) async {
+    await init();
     try {
       final response = await _dio.post(path, data: data, queryParameters: params);
       return _handleResponse(response);

@@ -7,13 +7,18 @@ import 'package:flutter_cursor_demo/routes/app_routes.dart';
 import 'package:flutter_cursor_demo/viewmodels/home_viewmodel.dart';
 import 'package:flutter_cursor_demo/viewmodels/system_viewmodel.dart';
 import 'package:flutter_cursor_demo/viewmodels/user_viewmodel.dart';
+import 'package:flutter_cursor_demo/viewmodels/search_viewmodel.dart';
 import 'package:flutter_cursor_demo/services/storage_service.dart';
+import 'package:flutter_cursor_demo/services/http_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // 初始化本地存储
   await StorageService().init();
+  
+  // 初始化HTTP服务
+  await HttpService().init();
   
   // 设置状态栏颜色
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -34,6 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
         ChangeNotifierProvider(create: (_) => SystemViewModel()),
         ChangeNotifierProvider(create: (_) => UserViewModel()),
+        ChangeNotifierProvider(create: (_) => SearchViewModel()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),

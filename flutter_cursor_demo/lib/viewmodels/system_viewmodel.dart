@@ -106,6 +106,54 @@ class SystemViewModel extends ChangeNotifier {
     }
   }
   
+  // 收藏文章
+  Future<bool> collectArticle(Article article) async {
+    try {
+      final path = AppConfig.collectArticle.replaceFirst('{id}', article.id.toString());
+      final response = await _httpService.post(path);
+      
+      if (response['errorCode'] == 0) {
+        // 更新文章的收藏状态
+        final index = articles.indexWhere((a) => a.id == article.id);
+        if (index != -1) {
+          articles[index].collect = true;
+          notifyListeners();
+        }
+        return true;
+      } else {
+        _errorMessage = response['errorMsg'] ?? '收藏失败';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = '收藏失败: $e';
+      return false;
+    }
+  }
+  
+  // 取消收藏文章
+  Future<bool> uncollectArticle(Article article) async {
+    try {
+      final path = AppConfig.uncollectOriginId.replaceFirst('{id}', article.id.toString());
+      final response = await _httpService.post(path);
+      
+      if (response['errorCode'] == 0) {
+        // 更新文章的收藏状态
+        final index = articles.indexWhere((a) => a.id == article.id);
+        if (index != -1) {
+          articles[index].collect = false;
+          notifyListeners();
+        }
+        return true;
+      } else {
+        _errorMessage = response['errorMsg'] ?? '取消收藏失败';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = '取消收藏失败: $e';
+      return false;
+    }
+  }
+  
   // 获取体系树数据
   Future<void> _fetchTreeData() async {
     try {

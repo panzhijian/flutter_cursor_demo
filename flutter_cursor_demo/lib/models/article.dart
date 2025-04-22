@@ -6,10 +6,11 @@ class Article {
   final String? niceDate;
   final String? desc;
   final String? shareUser;
-  final bool collect;
+  bool collect;
   final String? chapterName;
   final String? superChapterName;
   final List<Tag> tags;
+  final int? originId;
   
   Article({
     this.id,
@@ -23,6 +24,7 @@ class Article {
     this.chapterName,
     this.superChapterName,
     this.tags = const [],
+    this.originId,
   });
   
   factory Article.fromJson(Map<String, dynamic> json) {
@@ -43,6 +45,7 @@ class Article {
       chapterName: json['chapterName'],
       superChapterName: json['superChapterName'],
       tags: tagList,
+      originId: json['originId'],
     );
   }
   
@@ -59,7 +62,38 @@ class Article {
       'chapterName': chapterName,
       'superChapterName': superChapterName,
       'tags': tags.map((e) => e.toJson()).toList(),
+      'originId': originId,
     };
+  }
+  
+  Article copyWith({
+    int? id,
+    String? title,
+    String? author,
+    String? link,
+    String? niceDate,
+    String? desc,
+    String? shareUser,
+    bool? collect,
+    String? chapterName,
+    String? superChapterName,
+    List<Tag>? tags,
+    int? originId,
+  }) {
+    return Article(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      link: link ?? this.link,
+      niceDate: niceDate ?? this.niceDate,
+      desc: desc ?? this.desc,
+      shareUser: shareUser ?? this.shareUser,
+      collect: collect ?? this.collect,
+      chapterName: chapterName ?? this.chapterName,
+      superChapterName: superChapterName ?? this.superChapterName,
+      tags: tags ?? this.tags,
+      originId: originId ?? this.originId,
+    );
   }
   
   @override
