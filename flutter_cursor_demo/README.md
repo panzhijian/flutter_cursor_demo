@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![AI Generated](https://img.shields.io/badge/AI%20Generated-100%25-orange.svg)](https://cursor.sh/)
 
-**一个完全由 Cursor AI 自动生成的 Flutter 应用程序演示**
+**一个完全由 Cursor AI 自动生成的 Flutter 应用程序演示,不手动写一行代码**
 
 </div>
 

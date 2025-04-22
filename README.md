@@ -18,13 +18,13 @@
 <div align="center">
 <table>
   <tr>
-    <td><img src="assets/images/WechatIMG754.png" alt="启动页" width="220"/></td>
-    <td><img src="assets/images/WechatIMG755.png" alt="首页" width="220"/></td>
-    <td><img src="assets/images/WechatIMG756.png" alt="搜索页" width="220"/></td>
+    <td><img src="flutter_cursor_demo/assets/images/WechatIMG754.png" alt="启动页" width="220"/></td>
+    <td><img src="flutter_cursor_demo/assets/images/WechatIMG755.png" alt="首页" width="220"/></td>
+    <td><img src="flutter_cursor_demo/assets/images/WechatIMG756.png" alt="搜索页" width="220"/></td>
   </tr>
   <tr>
-    <td><img src="assets/images/WechatIMG757.png" alt="体系页" width="220"/></td>
-    <td><img src="assets/images/WechatIMG758.png" alt="个人中心" width="220"/></td>
+    <td><img src="flutter_cursor_demo/assets/images/WechatIMG757.png" alt="体系页" width="220"/></td>
+    <td><img src="flutter_cursor_demo/assets/images/WechatIMG758.png" alt="个人中心" width="220"/></td>
   </tr>
 </table>
 </div>
@@ -129,8 +129,8 @@
 <div align="center">
 <table>
   <tr>
-    <td><img src="assets/images/WechatIMG759.jpeg" alt="微信收款码" width="300"/></td>
-    <td><img src="assets/images/WechatIMG760.jpeg" alt="支付宝收款码" width="300"/></td>
+    <td><img src="flutter_cursor_demo/assets/images/WechatIMG759.jpeg" alt="微信收款码" width="300"/></td>
+    <td><img src="flutter_cursor_demo/assets/images/WechatIMG760.jpeg" alt="支付宝收款码" width="300"/></td>
   </tr>
   <tr>
     <td align="center">微信支付</td>
