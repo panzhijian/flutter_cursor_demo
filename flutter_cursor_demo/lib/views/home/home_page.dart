@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                         'url': banner.url ?? '',
                       },
                     ).toString();
-                    context.go(uri);
+                    context.push(uri);
                   }
                 },
                 child: Container(

@@ -162,22 +162,9 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, 
         await viewModel.loadMoreArticles();
       },
       child: ListView.builder(
-        itemCount: viewModel.articles.length + 1,
+        itemCount: viewModel.articles.length,
         itemBuilder: (context, index) {
-          if (index == 0) {
-            return Padding(
-              padding: EdgeInsets.all(16.r),
-              child: Text(
-                '当前分类: ${viewModel.selectedSubTree?.name ?? ''}',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
-          }
-          
-          final article = viewModel.articles[index - 1];
+          final article = viewModel.articles[index];
           return ArticleItem(article: article);
         },
       ),

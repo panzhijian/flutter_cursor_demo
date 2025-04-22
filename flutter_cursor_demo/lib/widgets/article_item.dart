@@ -128,6 +128,6 @@ class ArticleItem extends StatelessWidget {
         'url': article.link ?? '',
       },
     ).toString();
-    context.go(uri);
+    context.push(uri);
   }
 } 

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_cursor_demo/routes/app_routes.dart';
+import 'package:flutter_cursor_demo/views/home/home_page.dart';
+import 'package:flutter_cursor_demo/views/system/system_page.dart';
+import 'package:flutter_cursor_demo/views/mine/mine_page.dart';
 
 class MainPage extends StatefulWidget {
   final Widget child;
@@ -14,11 +17,19 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
+  final List<Widget> _pages = [
+    const HomePage(),
+    const SystemPage(),
+    const MinePage(),
+  ];
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: widget.child,
+      body: IndexedStack(
+        index: _getSelectedIndex(context),
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getSelectedIndex(context),
         onTap: (index) => _onItemTapped(index, context),
