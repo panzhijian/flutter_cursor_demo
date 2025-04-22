@@ -2,6 +2,7 @@ import 'package:flutter_cursor_demo/config/app_config.dart';
 import 'package:flutter_cursor_demo/services/http_service.dart';
 import 'package:flutter_cursor_demo/services/storage_service.dart';
 import 'package:flutter_cursor_demo/models/user_info.dart';
+import 'package:dio/dio.dart';
 
 class UserService {
   static final UserService _instance = UserService._internal();
@@ -30,9 +31,14 @@ class UserService {
   // 登录
   Future<bool> login(String username, String password) async {
     try {
+      final formData = FormData.fromMap({
+        'username': username,
+        'password': password
+      });
+      
       final response = await _httpService.post(
         AppConfig.login,
-        data: {'username': username, 'password': password}
+        data: formData
       );
       
       if (response['errorCode'] == 0) {
@@ -55,13 +61,15 @@ class UserService {
   // 注册
   Future<bool> register(String username, String password, String repassword) async {
     try {
+      final formData = FormData.fromMap({
+        'username': username,
+        'password': password,
+        'repassword': repassword
+      });
+      
       final response = await _httpService.post(
         AppConfig.register,
-        data: {
-          'username': username,
-          'password': password,
-          'repassword': repassword
-        }
+        data: formData
       );
       
       if (response['errorCode'] == 0) {

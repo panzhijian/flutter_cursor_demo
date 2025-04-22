@@ -14,11 +14,14 @@ class SystemPage extends StatefulWidget {
   State<SystemPage> createState() => _SystemPageState();
 }
 
-class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin {
+class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late SystemViewModel _viewModel;
   late TabController _tabController;
   final EasyRefreshController _refreshController = EasyRefreshController();
   bool _isInitialized = false;
+  
+  @override
+  bool get wantKeepAlive => true;
   
   @override
   void initState() {
@@ -76,6 +79,7 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer<SystemViewModel>(
       builder: (context, viewModel, child) {
         return Scaffold(

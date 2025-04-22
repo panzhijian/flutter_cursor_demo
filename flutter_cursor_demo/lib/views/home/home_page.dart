@@ -19,10 +19,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   late HomeViewModel _viewModel;
   final EasyRefreshController _refreshController = EasyRefreshController();
   bool _isInitialized = false;
+  
+  @override
+  bool get wantKeepAlive => true;
   
   @override
   void initState() {
@@ -53,9 +56,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('玩Android'),
+        title: const Text('flutter_cursor_demo'),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),

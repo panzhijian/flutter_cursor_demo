@@ -13,11 +13,13 @@ class MinePage extends StatefulWidget {
   State<MinePage> createState() => _MinePageState();
 }
 
-class _MinePageState extends State<MinePage> {
+class _MinePageState extends State<MinePage> with AutomaticKeepAliveClientMixin {
   late UserViewModel _viewModel;
   bool _isInitialized = false;
   
   @override
+  bool get wantKeepAlive => true;
+  
   void initState() {
     super.initState();
     _viewModel = context.read<UserViewModel>();
@@ -40,31 +42,27 @@ class _MinePageState extends State<MinePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('我的'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // TODO: 实现设置功能
-            },
-          ),
-        ],
-      ),
       body: Consumer<UserViewModel>(
         builder: (context, viewModel, child) {
           return RefreshIndicator(
             onRefresh: _init,
-            child: SingleChildScrollView(
+            child: ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                children: [
-                  _buildUserHeader(context, viewModel),
-                  SizedBox(height: 16.h),
-                  _buildFunctionList(context, viewModel),
-                ],
-              ),
+              itemCount: viewModel.isLoggedIn ? 3 : 3, // 根据登录状态调整项目数量
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  // 用户信息头部
+                  return _buildUserHeader(context, viewModel);
+                } else if (index == 1) {
+                  // 功能列表
+                  return _buildFunctionList(context, viewModel);
+                } else {
+                  // 登录/注册按钮区域（如果未登录）
+                  return _buildLoginButtonArea(context, viewModel);
+                }
+              },
             ),
           );
         },
@@ -177,26 +175,35 @@ class _MinePageState extends State<MinePage> {
             ),
           ),
         ),
-        ElevatedButton(
-          onPressed: () {
-            context.push(AppRoutes.login);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Theme.of(context).primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-          ),
-          child: Text(
-            '登录/注册',
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.bold,
-            ),
+      ],
+    );
+  }
+  
+  Widget _buildLoginButtonArea(BuildContext context, UserViewModel viewModel) {
+    if (viewModel.isLoggedIn) return const SizedBox.shrink();
+    
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 32.h),
+      child: ElevatedButton(
+        onPressed: () {
+          context.push(AppRoutes.login);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: 12.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r),
           ),
         ),
-      ],
+        child: Text(
+          '登录/注册',
+          style: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
   
@@ -215,31 +222,10 @@ class _MinePageState extends State<MinePage> {
           },
         ),
         _buildFunctionItem(
-          icon: Icons.history,
-          title: '浏览历史',
-          onTap: () {
-            // TODO: 实现浏览历史功能
-          },
-        ),
-        _buildFunctionItem(
-          icon: Icons.star,
-          title: '积分排行',
-          onTap: () {
-            // TODO: 实现积分排行功能
-          },
-        ),
-        _buildFunctionItem(
-          icon: Icons.share,
-          title: '分享',
-          onTap: () {
-            // TODO: 实现分享功能
-          },
-        ),
-        _buildFunctionItem(
           icon: Icons.info,
           title: '关于我们',
           onTap: () {
-            // TODO: 实现关于我们功能
+            _showAboutDialog(context);
           },
         ),
       ],
@@ -305,6 +291,32 @@ class _MinePageState extends State<MinePage> {
               context.push(AppRoutes.login);
             },
             child: const Text('去登录'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('关于我们'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('应用名称: Flutter Cursor Demo'),
+            SizedBox(height: 8.h),
+            Text('版本: 1.0.0'),
+            SizedBox(height: 8.h),
+            Text('这是一个基于WanAndroid API开发的Flutter示例应用，展示了Flutter应用开发的基本架构和功能实现。'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('关闭'),
           ),
         ],
       ),

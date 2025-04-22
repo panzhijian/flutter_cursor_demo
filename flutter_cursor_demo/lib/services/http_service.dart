@@ -13,7 +13,6 @@ class HttpService {
       baseUrl: AppConfig.baseUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
-      headers: {'Content-Type': 'application/json'},
     ));
     
     // 添加请求拦截器
@@ -46,7 +45,7 @@ class HttpService {
   }
   
   // POST请求
-  Future<Map<String, dynamic>> post(String path, {Map<String, dynamic>? data, Map<String, dynamic>? params}) async {
+  Future<Map<String, dynamic>> post(String path, {dynamic data, Map<String, dynamic>? params}) async {
     try {
       final response = await _dio.post(path, data: data, queryParameters: params);
       return _handleResponse(response);
