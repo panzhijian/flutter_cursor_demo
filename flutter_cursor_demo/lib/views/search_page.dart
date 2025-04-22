@@ -155,11 +155,34 @@ class _SearchPageState extends State<SearchPage> {
               } else {
                 await viewModel.searchByAuthor(viewModel.currentKeyword);
               }
+              
+              if (viewModel.hasError) {
+                _refreshController.finishRefresh(IndicatorResult.fail);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(viewModel.errorMessage)),
+                );
+              } else {
+                _refreshController.finishRefresh(IndicatorResult.success);
+              }
             },
             onLoad: () async {
               await viewModel.loadMore();
+              
+              if (viewModel.hasError) {
+                _refreshController.finishLoad(IndicatorResult.fail);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(viewModel.errorMessage)),
+                );
+              } else if (!viewModel.hasMore) {
+                _refreshController.finishLoad(IndicatorResult.noMore);
+              } else {
+                _refreshController.finishLoad(IndicatorResult.success);
+              }
             },
+            resetAfterRefresh: true,
+            refreshOnStart: false,
             child: ListView.builder(
+              physics: const ClampingScrollPhysics(),
               itemCount: viewModel.searchResults.length,
               itemBuilder: (context, index) {
                 final article = viewModel.searchResults[index];

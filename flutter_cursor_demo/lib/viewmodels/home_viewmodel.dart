@@ -60,6 +60,7 @@ class HomeViewModel extends ChangeNotifier {
       ]);
     } catch (e) {
       _errorMessage = '刷新失败: $e';
+      rethrow; // 重新抛出异常，让UI层可以捕获
     }
   }
   
@@ -68,12 +69,14 @@ class HomeViewModel extends ChangeNotifier {
     if (_isLoadingMore || !hasMore) return;
     
     _isLoadingMore = true;
+    _errorMessage = '';
     notifyListeners();
     
     try {
-      await _fetchArticles();
+      await _fetchArticles(refresh: false);
     } catch (e) {
       _errorMessage = '加载更多失败: $e';
+      rethrow; // 重新抛出异常，让UI层可以捕获
     } finally {
       _isLoadingMore = false;
       notifyListeners();
@@ -163,22 +166,24 @@ class HomeViewModel extends ChangeNotifier {
         if (refresh || _articlePageData == null) {
           _articlePageData = pageData;
         } else {
+          final List<Article> combinedArticles = [..._articlePageData!.datas, ...pageData.datas];
           _articlePageData = _articlePageData!.copyWith(
             curPage: pageData.curPage,
             over: pageData.over,
-            appendDatas: pageData.datas,
+            datas: combinedArticles,
           );
         }
         
         notifyListeners();
       } else {
+        if (!refresh) {
+          _currentPage--; // 如果是加载更多失败，需要回退页码
+        }
         throw Exception(response['errorMsg'] ?? '获取文章列表失败');
       }
     } catch (e) {
-      if (refresh) {
-        _currentPage = 0;
-      } else {
-        _currentPage--;
+      if (!refresh) {
+        _currentPage--; // 如果是加载更多失败，需要回退页码
       }
       throw Exception('获取文章列表失败: $e');
     }

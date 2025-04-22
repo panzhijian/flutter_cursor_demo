@@ -19,7 +19,10 @@ class SystemPage extends StatefulWidget {
 class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late SystemViewModel _viewModel;
   late TabController _tabController;
-  final EasyRefreshController _refreshController = EasyRefreshController();
+  final EasyRefreshController _refreshController = EasyRefreshController(
+    controlFinishRefresh: true,
+    controlFinishLoad: true,
+  );
   bool _isInitialized = false;
   
   @override
@@ -67,6 +70,10 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, 
       if (tree != null && tree.children.isNotEmpty && _tabController.index < tree.children.length) {
         final subTree = tree.children[_tabController.index];
         _viewModel.selectSubTree(subTree);
+        
+        // 切换分类时重置刷新状态
+        _refreshController.resetFooter();
+        _refreshController.resetHeader();
       }
     }
   }
@@ -155,7 +162,7 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, 
       );
     }
     
-    return EasyRefresh(
+    return EasyRefresh.builder(
       controller: _refreshController,
       header: const ClassicHeader(
         dragText: '下拉刷新',
@@ -165,6 +172,7 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, 
         processedText: '刷新完成',
         failedText: '刷新失败',
         messageText: '最后更新于 %T',
+        showMessage: true,
       ),
       footer: const ClassicFooter(
         dragText: '上拉加载',
@@ -175,21 +183,81 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, 
         failedText: '加载失败',
         noMoreText: '没有更多数据',
         messageText: '最后更新于 %T',
+        showMessage: true,
       ),
       onRefresh: () async {
-        await viewModel.refreshData();
+        try {
+          await viewModel.refreshData();
+          if (viewModel.hasError) {
+            _refreshController.finishRefresh(IndicatorResult.fail);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(viewModel.errorMessage)),
+              );
+            }
+          } else {
+            _refreshController.finishRefresh(IndicatorResult.success);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('刷新成功')),
+              );
+            }
+          }
+        } catch (e) {
+          _refreshController.finishRefresh(IndicatorResult.fail);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('刷新失败: $e')),
+            );
+          }
+        }
       },
       onLoad: () async {
-        await viewModel.loadMoreArticles();
+        try {
+          if (!viewModel.hasMore) {
+            _refreshController.finishLoad(IndicatorResult.noMore);
+            return;
+          }
+          
+          await viewModel.loadMoreArticles();
+          if (viewModel.hasError) {
+            _refreshController.finishLoad(IndicatorResult.fail);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(viewModel.errorMessage)),
+              );
+            }
+          } else if (!viewModel.hasMore) {
+            _refreshController.finishLoad(IndicatorResult.noMore);
+          } else {
+            _refreshController.finishLoad(IndicatorResult.success);
+          }
+        } catch (e) {
+          _refreshController.finishLoad(IndicatorResult.fail);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('加载更多失败: $e')),
+            );
+          }
+        }
       },
-      resetAfterRefresh: true,
-      child: ListView.builder(
-        itemCount: viewModel.articles.length,
-        itemBuilder: (context, index) {
-          final article = viewModel.articles[index];
-          return ArticleItem(article: article);
-        },
-      ),
+      childBuilder: (context, physics) {
+        return viewModel.articles.isEmpty 
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('该分类下暂无文章'),
+                ),
+              )
+            : ListView.builder(
+                physics: physics,
+                itemCount: viewModel.articles.length,
+                itemBuilder: (context, index) {
+                  final article = viewModel.articles[index];
+                  return ArticleItem(article: article);
+                },
+              );
+      },
     );
   }
   
@@ -213,6 +281,10 @@ class _SystemPageState extends State<SystemPage> with TickerProviderStateMixin, 
                     viewModel.selectTree(tree);
                     Navigator.of(context).pop();
                     _updateTabController();
+                    
+                    // 切换主分类时重置刷新状态
+                    _refreshController.resetFooter();
+                    _refreshController.resetHeader();
                   },
                 );
               },

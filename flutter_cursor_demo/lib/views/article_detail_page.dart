@@ -29,13 +29,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
   
   void _initWebView() {
-    // 处理URL，确保有完整的scheme
-    String urlToLoad = widget.url;
-    
-    // 检查URL是否包含scheme
-    if (!urlToLoad.startsWith('http://') && !urlToLoad.startsWith('https://')) {
-      // 如果是相对路径，添加完整的域名前缀
-      urlToLoad = 'https://www.wanandroid.com${urlToLoad.startsWith('/') ? '' : '/'}$urlToLoad';
+    String url = widget.url;
+    // 处理相对URL
+    if (!url.startsWith('http') && url.isNotEmpty) {
+      url = 'https://www.wanandroid.com$url';
     }
     
     _controller = WebViewController()
@@ -56,8 +53,15 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             debugPrint('WebView error: ${error.description}');
           },
         ),
-      )
-      ..loadRequest(Uri.parse(urlToLoad));
+      );
+      
+    if (url.isNotEmpty) {
+      _controller.loadRequest(Uri.parse(url));
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override

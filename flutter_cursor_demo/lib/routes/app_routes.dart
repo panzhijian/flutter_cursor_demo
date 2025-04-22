@@ -9,12 +9,14 @@ import 'package:flutter_cursor_demo/views/mine/collect_page.dart';
 import 'package:flutter_cursor_demo/views/article_detail_page.dart';
 import 'package:flutter_cursor_demo/views/main_page.dart';
 import 'package:flutter_cursor_demo/views/search_page.dart';
+import 'package:flutter_cursor_demo/views/splash_page.dart';
 import 'package:flutter_cursor_demo/viewmodels/search_viewmodel.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 class AppRoutes {
+  static const String splash = '/splash';
   static const String home = '/home';
   static const String system = '/system';
   static const String mine = '/mine';
@@ -26,17 +28,19 @@ class AppRoutes {
   
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/',
+    initialLocation: splash,
     routes: [
+      GoRoute(
+        path: splash,
+        builder: (context, state) => const SplashPage(),
+      ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => MainPage(child: child),
         routes: [
           GoRoute(
             path: '/',
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: HomePage(),
-            ),
+            redirect: (_, __) => home,
           ),
           GoRoute(
             path: home,

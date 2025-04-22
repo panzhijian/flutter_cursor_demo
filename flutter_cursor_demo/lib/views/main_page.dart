@@ -41,6 +41,8 @@ class _MainPageState extends State<MainPage> {
           currentIndex: selectedIndex,
           onTap: (index) => _onItemTapped(index, context),
           type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          elevation: 8,
           selectedItemColor: Theme.of(context).primaryColor,
           unselectedItemColor: Colors.grey,
           selectedFontSize: 12.sp,
